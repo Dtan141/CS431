@@ -885,7 +885,7 @@ if __name__ == "__main__":
             "image_logger": {
                 "target": "train.ImageLogger",
                 "params": {
-                    "batch_frequency": 750, # origin 750
+                    "batch_frequency": 50, # origin 750 --> change to 50
                     "max_images": 4,
                     "clamp": True
                 }

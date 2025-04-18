@@ -108,6 +108,7 @@ from pytorch_lightning import seed_everything
 from pytorch_lightning.trainer import Trainer
 from pytorch_lightning.callbacks import Callback, LearningRateMonitor
 from pytorch_lightning.utilities.distributed import rank_zero_only
+from pytorch_lightning.loggers import TensorBoardLogger
 from pytorch_lightning.utilities import rank_zero_info
 
 from ldm.data.base import Txt2ImgIterableBaseDataset
@@ -885,7 +886,7 @@ if __name__ == "__main__":
             "image_logger": {
                 "target": "train.ImageLogger",
                 "params": {
-                    "batch_frequency": 50, # origin 750 --> change to 50
+                    "batch_frequency": 100, # origin 750 --> change to 100
                     "max_images": 4,
                     "clamp": True
                 }
@@ -934,10 +935,16 @@ if __name__ == "__main__":
             del callbacks_cfg['ignore_keys_callback']
 
         trainer_kwargs["callbacks"] = [instantiate_from_config(callbacks_cfg[k]) for k in callbacks_cfg]
+        
+        logger = TensorBoardLogger(
+            save_dir=logdir,     # logdir đã được định nghĩa trước đó
+            name="train"         # tên thư mục con chứa log
+        )
+
+        trainer_kwargs["logger"] = logger
 
         trainer = Trainer.from_argparse_args(trainer_opt, **trainer_kwargs)
         trainer.logdir = logdir
-        # trainer.logger = pl.loggers.WandbLogger()
         
         config.data.params.train.params.mask_datapath = opt.mask_datapath
 
